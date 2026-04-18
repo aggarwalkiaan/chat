@@ -68,11 +68,11 @@
         const text = messageInput.value;
         if (text.trim() !== "") {
             push(messagesRef, {
-                text: text,
-                user: myName,
-                color: myColor, // Send the signature color with the message
-                timestamp: Date.now()
-            });
+    text: text,
+    user: myName,
+    color: myColor,
+    timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+});
             messageInput.value = "";
         }
     });
@@ -90,6 +90,14 @@
         
         chatBox.appendChild(msgDiv);
         chatBox.scrollTop = chatBox.scrollHeight;
+        // Inside onChildAdded
+msgDiv.innerHTML = `
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 3px;">
+        <b style="font-size: 10px;">${msgData.user}</b>
+        <span style="font-size: 9px; opacity: 0.6;">🕒 ${msgData.timestamp || ''}</span>
+    </div>
+    ${msgData.text}
+`;
     });
 
     messageInput.addEventListener("keypress", (e) => { if (e.key === "Enter") sendBtn.click(); });
