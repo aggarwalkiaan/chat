@@ -27,12 +27,9 @@
 </div>
 
 <script type="module">
-    // Using CDN versions so it works on GitHub Pages for free!
-    const myName = prompt("What is your name?"); // This pops up when they first open the chat!
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getDatabase, ref, push, onChildAdded } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-    // YOUR REAL DATA!
     const firebaseConfig = {
       apiKey: "AIzaSyCoQCJp6Zg3oselNh1I9qdm9zD_aIk0bJA",
       authDomain: "chatwebsite-bd070.firebaseapp.com",
@@ -47,39 +44,53 @@
     const db = getDatabase(app);
     const messagesRef = ref(db, 'messages');
 
+    // --- PERSONALIZATION LOGIC ---
+    // Check if we already know this user. If not, ask and pick a color.
+    let myName = localStorage.getItem('chat_name');
+    let myColor = localStorage.getItem('chat_color');
+
+    if (!myName) {
+        myName = prompt("Enter your name to join the chat:") || "Guest";
+        localStorage.setItem('chat_name', myName);
+        
+        const colors = ['#FFD1DC', '#B3E5BE', '#AEC6CF', '#F49AC2', '#FFB347', '#CB99C9', '#97CAEF', '#E6E6FA'];
+        myColor = colors[Math.floor(Math.random() * colors.length)];
+        localStorage.setItem('chat_color', myColor);
+    }
+
     const chatBox = document.getElementById('chat-box');
     const messageInput = document.getElementById('messageInput');
     const sendBtn = document.getElementById('sendBtn');
 
-    // Function to send message
     sendBtn.addEventListener('click', () => {
         const text = messageInput.value;
         if (text.trim() !== "") {
-          push(messagesRef, { text: text, user: myName });
+            push(messagesRef, {
+                text: text,
+                user: myName,
+                color: myColor, // Send the signature color with the message
+                timestamp: Date.now()
+            });
             messageInput.value = "";
         }
     });
 
-    // Listen for new messages
-   onChildAdded(messagesRef, (data) => {
-    const msgData = data.val();
-    const msgDiv = document.createElement('div');
-    msgDiv.classList.add('msg');
-    msgDiv.textContent = msgData.text;
-    
-    // --- ADD THIS COLOR MAGIC ---
-    const colors = ['#ffadad', '#ffd6a5', '#fdffb6', '#caffbf', '#9bf6ff', '#a0c4ff', '#bdb2ff', '#ffc6ff'];
-    const randomColor = colors[Math.floor(Math.random() * colors.length)];
-    msgDiv.style.backgroundColor = randomColor;
-    // ----------------------------
-
-    chatBox.appendChild(msgDiv);
-    chatBox.scrollTop = chatBox.scrollHeight;
-});
-    // Let people press "Enter" to send
-    messageInput.addEventListener("keypress", (event) => {
-      if (event.key === "Enter") sendBtn.click();
+    onChildAdded(messagesRef, (data) => {
+        const msgData = data.val();
+        const msgDiv = document.createElement('div');
+        msgDiv.classList.add('msg');
+        
+        // Show the name on top, then the text
+        msgDiv.innerHTML = `<b style="font-size: 10px; display: block; margin-bottom: 3px;">${msgData.user}</b>${msgData.text}`;
+        
+        // Use the color that was sent with the message
+        msgDiv.style.backgroundColor = msgData.color || '#white';
+        
+        chatBox.appendChild(msgDiv);
+        chatBox.scrollTop = chatBox.scrollHeight;
     });
+
+    messageInput.addEventListener("keypress", (e) => { if (e.key === "Enter") sendBtn.click(); });
 </script>
 
 </body>
