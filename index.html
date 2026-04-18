@@ -44,7 +44,7 @@
     const db = getDatabase(app);
     const messagesRef = ref(db, 'messages');
 
-   // --- PERSONAL DATA LOGIC ---
+  // --- PERSONAL DATA LOGIC ---
     // This looks in the browser's memory to see if you already have a name/color
     let myName = localStorage.getItem('chat_user_name');
     let myColor = localStorage.getItem('chat_user_color');
@@ -58,15 +58,6 @@
         const personalColors = ['#FFD1DC', '#B3E5BE', '#AEC6CF', '#F49AC2', '#FFB347', '#CB99C9'];
         myColor = personalColors[Math.floor(Math.random() * personalColors.length)];
         localStorage.setItem('chat_user_color', myColor);
-    }
-
-    if (!myName) {
-        myName = prompt("Enter your name to join the chat:") || "Guest";
-        localStorage.setItem('chat_name', myName);
-        
-        const colors = ['#FFD1DC', '#B3E5BE', '#AEC6CF', '#F49AC2', '#FFB347', '#CB99C9', '#97CAEF', '#E6E6FA'];
-        myColor = colors[Math.floor(Math.random() * colors.length)];
-        localStorage.setItem('chat_color', myColor);
     }
 
     const chatBox = document.getElementById('chat-box');
