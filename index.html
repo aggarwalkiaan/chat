@@ -28,6 +28,7 @@
 
 <script type="module">
     // Using CDN versions so it works on GitHub Pages for free!
+    const myName = prompt("What is your name?"); // This pops up when they first open the chat!
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getDatabase, ref, push, onChildAdded } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
@@ -63,15 +64,21 @@
     });
 
     // Listen for new messages
-    onChildAdded(messagesRef, (data) => {
-        const msgData = data.val();
-        const msgDiv = document.createElement('div');
-        msgDiv.classList.add('msg');
-        msgDiv.textContent = msgData.text;
-        chatBox.appendChild(msgDiv);
-        chatBox.scrollTop = chatBox.scrollHeight; // Auto-scroll to bottom
-    });
+   onChildAdded(messagesRef, (data) => {
+    const msgData = data.val();
+    const msgDiv = document.createElement('div');
+    msgDiv.classList.add('msg');
+    msgDiv.textContent = msgData.text;
+    
+    // --- ADD THIS COLOR MAGIC ---
+    const colors = ['#ffadad', '#ffd6a5', '#fdffb6', '#caffbf', '#9bf6ff', '#a0c4ff', '#bdb2ff', '#ffc6ff'];
+    const randomColor = colors[Math.floor(Math.random() * colors.length)];
+    msgDiv.style.backgroundColor = randomColor;
+    // ----------------------------
 
+    chatBox.appendChild(msgDiv);
+    chatBox.scrollTop = chatBox.scrollHeight;
+});
     // Let people press "Enter" to send
     messageInput.addEventListener("keypress", (event) => {
       if (event.key === "Enter") sendBtn.click();
