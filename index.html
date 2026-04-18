@@ -55,10 +55,7 @@
     sendBtn.addEventListener('click', () => {
         const text = messageInput.value;
         if (text.trim() !== "") {
-            push(messagesRef, {
-                text: text,
-                timestamp: Date.now()
-            });
+          push(messagesRef, { text: text, user: myName });
             messageInput.value = "";
         }
     });
